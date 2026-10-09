@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#556B2F" />
+  <meta name="description" content="FOODMANIA - Find Your Favorite Food and Win a Free Order! A fun restaurant promotional mini-game." />
+  <title>FOODMANIA — Find Your Free Food!</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       FLOATING FOOD EMOJIS (decorative background layer)
+       Populated by script.js
+       ============================================================ -->
+  <div class="floating-layer" id="floatingLayer" aria-hidden="true"></div>
+
+  <!-- Sound mute / unmute toggle (always visible) -->
+  <button id="muteBtn" class="icon-btn mute-btn" aria-label="Toggle sound" title="Mute / Unmute">
+    <span id="muteIcon">🔊</span>
+  </button>
+
+  <!-- ============================================================
+       APP — all screens live here
+       ============================================================ -->
+  <main id="app">
+
+    <!-- ============ 1. WELCOME SCREEN ============ -->
+    <section id="screen-welcome" class="screen is-active" aria-label="Welcome screen">
+      <div class="welcome-card">
+        <!-- Food themed logo -->
+        <div class="logo" aria-hidden="true">
+          <span class="logo-plate">🍽️</span>
+          <span class="logo-badge">🍔</span>
+        </div>
+
+        <h1 class="brand">FOOD<span>MANIA</span></h1>
+        <p class="brand-tag">Fresh • Fun • Delicious</p>
+
+        <h2 class="welcome-title">Welcome to Foodmania!</h2>
+        <p class="welcome-sub">Find Your Favorite Food and Win a Free Order!</p>
+
+        <button id="playBtn" class="btn btn-primary btn-xl pulse">
+          PLAY &amp; WIN A FREE ORDER!
+        </button>
+
+        <!-- Saved reward badge (appears if a reward exists in localStorage) -->
+        <div id="savedReward" class="saved-reward hidden"></div>
+
+        <p class="promo-note">
+          🎁 A fun promotional game. Prizes are subject to Foodmania's actual promotion terms.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 2. LEVELS SCREEN ============ -->
+    <section id="screen-levels" class="screen" aria-label="Level select screen">
+      <header class="screen-head">
+        <button class="btn btn-ghost back-btn" data-back="welcome">← Home</button>
+        <h2 class="screen-title">Choose Your Challenge</h2>
+        <span class="head-spacer"></span>
+      </header>
+
+      <p class="levels-lead">Complete a level to unlock the next one. Find every food before the clock runs out!</p>
+
+      <div id="levelGrid" class="level-grid"><!-- levels injected by JS --></div>
+    </section>
+
+    <!-- ============ 3. GAME SCREEN ============ -->
+    <section id="screen-game" class="screen" aria-label="Game screen">
+      <header class="game-head">
+        <button class="btn btn-ghost" id="gameBackBtn">← Levels</button>
+        <div class="game-head-mid">
+          <span class="game-level-name" id="gameLevelName">Level 1</span>
+          <h2 class="game-level-title" id="gameLevelTitle">Food Finder</h2>
+        </div>
+        <button class="btn btn-ghost" id="pauseBtn">⏸ Pause</button>
+      </header>
+
+      <!-- Mission panel with the target foods -->
+      <div class="mission-panel">
+        <div class="mission-top">
+          <div class="progress-wrap">
+            <span class="mission-label">Mission</span>
+            <span class="progress-count" id="progressCount">0/5 Foods Found</span>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+          </div>
+          <div class="timer-wrap" id="timerWrap">
+            <span class="timer-label">Time</span>
+            <div class="timer" id="timer">60</div>
+          </div>
+        </div>
+        <div class="targets" id="targetList"><!-- target chips injected by JS --></div>
+      </div>
+
+      <!-- The restaurant room where foods are hidden -->
+      <div class="room-frame">
+        <div id="room" class="room" aria-label="Restaurant room with hidden foods">
+          <!-- Decorative fixtures -->
+          <div class="decor" aria-hidden="true">
+            <span class="deco" style="left:4%;  top:10%; font-size:2.2rem;">🪴</span>
+            <span class="deco" style="left:90%; top:12%; font-size:2.4rem;">🫙</span>
+            <span class="deco" style="left:2%;  top:78%; font-size:2rem;">🧺</span>
+            <span class="deco" style="left:92%; top:80%; font-size:2rem;">🧁</span>
+            <span class="deco" style="left:47%; top:2%;  font-size:2.2rem;">👨‍🍳</span>
+            <span class="deco" style="left:22%; top:6%;  font-size:1.8rem;">🍽️</span>
+            <span class="deco" style="left:74%; top:5%;  font-size:1.8rem;">🕯️</span>
+          </div>
+          <!-- Shelf stripes / kitchen backdrop -->
+          <div class="shelf shelf-1" aria-hidden="true"></div>
+          <div class="shelf shelf-2" aria-hidden="true"></div>
+          <!-- Clickable food items get injected here by JS -->
+          <div id="foodLayer" class="food-layer"></div>
+        </div>
+      </div>
+
+      <!-- Floating hint message -->
+      <div id="hint" class="hint hidden" role="status"></div>
+    </section>
+
+    <!-- ============ 4. SPIN / REWARD SCREEN ============ -->
+    <section id="screen-spin" class="screen" aria-label="Lucky spin screen">
+      <div class="spin-head">
+        <h2 class="celebrate-title" id="celebrateTitle">AMAZING! YOU FOUND ALL 5 FOODS!</h2>
+        <p class="celebrate-sub" id="celebrateSub">Congratulations! You unlocked the FOODMANIA Lucky Spin!</p>
+      </div>
+
+      <div class="wheel-stage">
+        <div class="wheel-pointer" aria-hidden="true"></div>
+        <div class="wheel-outer">
+          <div id="wheel" class="wheel" role="img" aria-label="Lucky spin wheel">
+            <!-- labels injected by JS -->
+          </div>
+          <div class="wheel-hub" aria-hidden="true">🍴</div>
+        </div>
+      </div>
+
+      <button id="spinBtn" class="btn btn-primary btn-xl">SPIN &amp; WIN!</button>
+      <p class="spin-note">One spin per completed game — good luck! 🍀</p>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    Made with love by FOODMANIA.
+  </footer>
+
+  <!-- ============================================================
+       MODAL OVERLAY (pause / success / game over / reward)
+       ============================================================ -->
+  <div id="overlay" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card" id="modalCard"><!-- injected by JS --></div>
+  </div>
+
+  <!-- Confetti layer -->
+  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
